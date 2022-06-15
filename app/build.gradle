@@ -1,0 +1,45 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 32  //项目在此版本上编译
+    //buildToolsVersion 32.0.1 Android具体的版本
+
+    defaultConfig {
+        applicationId "com.zs.androidapp" //项目包名
+        minSdkVersion 26  //程序所能兼容的最低版本
+        targetSdkVersion 32
+        versionCode 1 //项目版本号
+        versionName "1.0"  //项目版本名
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        assembleRelease {
+            minifyEnabled false  //是否开启混淆  false表示不开启
+            zipAlignEnabled false //是否zip对齐
+            shrinkResources false //是否移除无用的资源
+            debuggable false  //是否打开debug开关
+            jniDebuggable false  //是否打开jni开关
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        /*assembleDebug{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }*/
+    }
+
+    sourceSets{
+        main{
+            jniLibs.srcDir 'libs'  //指定so库的路径
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')  //关联libs文件
+    implementation 'com.android.support:appcompat-v7:26.0.0-bate1'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.android.support:recyclerview-v7:26.0.0-beta1'
+}
