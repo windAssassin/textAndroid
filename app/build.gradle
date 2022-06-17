@@ -1,3 +1,4 @@
+
 /**
  * 记录mac下gradle环境变量的配置
  * 1、从官网下载gradle文件
@@ -77,6 +78,25 @@
  * 还可以在buildTypes中根据不同的构建类型，配置常量
  */
 
+/**
+ * 通过Android gradle自定义动态res/value中的资源：resValue(String type, String name, String value)方法
+ * 同样在buildTypes和productFlavors中都有这个方法
+ * productFlavors{
+ *     google{
+ *         resValue 'string', 'channel_tips', 'google渠道'
+ *     }
+ *     baidu{
+ *         resValue 'string', 'channel_tips', 'baidu渠道'
+ *     }
+ * }
+ *
+ * Android gradle会自动生成相应的资源，在debug模式下：
+ * build/generated/res/resValues/baidu/debug/values/generated.xml
+ *
+ * 其使用方式和res/value下的资源是相同的
+ *
+ */
+
 apply plugin: 'com.android.application'
 apply from: 'version.gradle'
 
@@ -84,6 +104,39 @@ apply from: 'version.gradle'
 android {
     compileSdkVersion 32  //项目在此版本上编译
     //buildToolsVersion 32.0.1 Android具体的版本
+
+    /**
+     * 通过Android gradle通过android类下面的compileOptions方法对jdk的进行一些调整
+     *
+     * compileOptions{
+     *     配置源文件的编码为utf-8,以兼容更多的字符
+     *     encoding = 'utf-8'
+     *     配置java源代码的编译级别，其值可以是"1.8"  1.8   JavaVersion.Version_1_8   "Version_1_8"
+     *     sourceCompatibility = JavaVersion.VERSION_1_8
+     *     配置生成Java字节码的版本，其值和sourceCompatibility相同
+     *     targetCompatibility = JavaVersion.VERSION_1_8
+     * }
+     */
+
+    /**
+     * adbOptions{}通过Android gradle配置adb的一些属性
+     * adbOptions{
+     *
+     *     设置adb的命令的超时时间（commandRejectException）
+     *     timeOutInMa = 5 * 1000
+     *
+     *     installOptions '-r', '-s'
+     *
+     *     adb install命令行
+     *      -l: 锁定该应用程序
+     *      -r: 替换已经存在应用程序
+     *      -t: 允许测试包
+     *      -s: 安装到sd卡上
+     *      -d: 允许进行降级安装
+     *      -g: 为该应用授权所有运行时权限
+     *
+     * }
+     */
 
     /**
      * 是一个默认配置，它是一个productFlavor。productFlavor允许根据不同的情况生成多个不同的apk包
