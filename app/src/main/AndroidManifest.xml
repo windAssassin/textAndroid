@@ -2,6 +2,26 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zs.androidapp">
 
+    <!--
+    manifestPlaceholder占位符的使用，例如打多个不同的渠道包
+    1、首先在.gradle文件中配置productFlavors
+        android{
+            compileSdkVersion 23
+            productFlavors{
+                google{
+                }
+                baidu{
+                }
+            }
+
+            productFlavors.all{
+                flavors->
+                    manifestPlaceHolders.put("UMENG_CHANNEL", name)
+            }
+        }
+     通过manifestPlaceHolders占位符可以替换项目配置文件中的任何${var}$格式的占位符，
+     例如：contentProvider的auth的授权，或者其他需要动态配置meta的信息等。
+    -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,13 +29,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+
+        <!--配置不同的渠道名-->
+        <!--<meta-data android:value="${UMENG_CHANNEL}$" android:name="UMENG_CHANNEL"/> -->
+
+        <activity android:name=".MainActivity"
+            android:exported="true"
+            >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+       <!--安装此apk需要com.google.android.maps共享库-->
+        <uses-library
+            android:name="com.google.android.maps"
+            android:required="true"/>
+
     </application>
 
 </manifest>

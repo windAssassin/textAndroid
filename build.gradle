@@ -7,15 +7,15 @@ buildscript {
 
         //阿里云
         maven {
-            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+            url 'https://maven.aliyun.com/repository/public'
         }
         google()
-        jcenter()
+        mavenCentral()
     }
 
     //指定项目所需插件下载地址以及版本号
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -27,13 +27,12 @@ allprojects {
 
     //依赖仓库
     repositories {
-
-        maven{
-            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+        maven {
+            url 'https://maven.aliyun.com/repository/public'
         }
 
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 

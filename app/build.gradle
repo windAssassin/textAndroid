@@ -1,24 +1,160 @@
-apply plugin: 'com.android.application'
+/**
+ * 记录mac下gradle环境变量的配置
+ * 1、从官网下载gradle文件
+ * 2、sudo vi ~/.bash_profile 打开系统环境配置文件
+ * 3、在文件末尾输入
+ *  GRADLE_HOME=...(下载的Gradle本地存储路径)
+    export GRADLE_HOME
+    export PATH=$PATH:$GRADLE_HOME/bin
+   4、source ～/.bash_profile  更新配置文件，让环境变量的配置生效
+ */
 
+/**
+ * 1、在Android的包中有一些库是可以直接使用的（如：android.app、android.content、android.view等）这些库可以直接使用，
+ * 系统会自动链接它们
+ * 2、还有一些库是独立的不会被自动链接（如com.google.android.maps、android.test.runner等），这类库被称为共享库
+ * 一般要想使用必须在AndroidManifest.xml文件中配置才可以使用
+ * <uses-library
+ *         android:name="com.google.android.maps"
+ *         android:required="true"/>
+ * 在安装apk的时候系统检测手机系统是否有我们需要的库，如果没有则不能安装
+ * 3、add-ons库，它位于add-ons目录下，这些苦gradle会自动解析
+ * 4、optional可选库，这种库不会自动添加到classPath中，这类库就需要我们手动添加
+ *      android{
+ *          useLibrary 'org.apache.http.legacy'
+ *      }
+ *      为了以防出现问题最好也在AndroidManifest.xml文件中配置一下uses-library
+ */
+
+/**
+ * gradle获取版本名的方法：（版本号major.minor.patch:主版本号.副版本号.补丁号）
+ * 利用project的exec方法获取版本名
+ * 通过git tag动态获取应用版本名
+ * def getAppVersionName{
+ *     def stdout = new ByteArrayOutputStream()
+ *     exec{
+ *         commandLine 'git','describe', '--abbrev=0', '--tags'
+ *         standardOutput = stdout
+ *     }
+ *     return stdout.toString()
+ * }
+ *
+ * 获取版本号, 通过获取tag的数量来获取到版本号
+ * def getAppVersionCode{
+ *     def stdout = new ByteArrayOutputStream()
+ *     exec{
+ *         commandLine 'git','tag', '--list'
+ *         standardOutput = stdout
+ *     }
+ *     return std.toString().split("\n").size()
+ * }
+ */
+
+
+/**
+ * 自定义BuildConfig
+ * public final class BuildConfig {
+        public static final boolean DEBUG = Boolean.parseBoolean("true");
+        //app id
+        public static final String APPLICATION_ID = "com.zs.androidapp";
+        //构建方式
+        public static final String BUILD_TYPE = "debug";
+        //版本号
+        public static final int VERSION_CODE = 1;
+        //版本名
+        public static final String VERSION_NAME = "1.0";
+ *    }
+ * 可以通过Android gradle提供的buildConfigField(String type, String name, String value)
+ * 添加自己的常量到BuildConfig中：type是字段类型，name是常量名字，value是常量值
+ * productFlavors{
+ *     google{
+ *         buildConfigField 'String', 'WEB_URL', '"http://www.google.com"'
+ *     }
+ *     baidu{
+ *         buildConfigField 'String', 'WEB_URL', '"http://www.baidu.com"'
+ *     }
+ * }
+ * 还可以在buildTypes中根据不同的构建类型，配置常量
+ */
+
+apply plugin: 'com.android.application'
+apply from: 'version.gradle'
+
+//android{}是Android插件提供的一个扩展类型
 android {
     compileSdkVersion 32  //项目在此版本上编译
     //buildToolsVersion 32.0.1 Android具体的版本
 
+    /**
+     * 是一个默认配置，它是一个productFlavor。productFlavor允许根据不同的情况生成多个不同的apk包
+     * 如果不是针对自定义productFlavor单独配置，就会使用默认的productFlavor
+     */
     defaultConfig {
         applicationId "com.zs.androidapp" //项目包名
         minSdkVersion 26  //程序所能兼容的最低版本
         targetSdkVersion 32
-        versionCode 1 //项目版本号
-        versionName "1.0"  //项目版本名
+        versionCode VERSION_CODE //项目版本号
+        versionName VERSION_NAME  //项目版本名
+
+        //配置单元测试时使用的runner
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        //使用配置完成的签名信息配置默认签名
+        //signingConfig signingConfigs.release
     }
+
+    //它是一个域对象，可以配置签名信息
+    /**
+     * signingConfigs{
+        //在配置完成签名信息之后可以在defaultConfig中使用
+       release{
+           //签名配置文件
+           storeFile file("mReleaseKey.keyStore")
+           //签名证书文件密码
+           storePassword "password"
+           //密钥别名
+           keyAlias "releasekey"
+           //密钥密码
+           keyPassword "keyPassword"
+       }
+        //默认情况下debug模式签名使用的是Android sdk自动生成的，一般位于"$HOME/.android/debug.keystore"
+        debug{
+
+        }
+    }
+     */
+
+    /**
+     * 它是一个域对象，可以在里面增加我们需要构建的类型
+     */
     buildTypes {
+        //创建一个项目构建类型
         assembleRelease {
             minifyEnabled false  //是否开启混淆  false表示不开启
-            zipAlignEnabled false //是否zip对齐
+
+            /**
+             * zip自动对齐
+             * zipAlign是一个整理优化apk文件的工具，它能提高系统和应用的运行效率，更快的读写apk中的资源，降低内存的使用
+             */
+            zipAlignEnabled false
+
             shrinkResources false //是否移除无用的资源
             debuggable false  //是否打开debug开关
-            jniDebuggable false  //是否打开jni开关
+            jniDebuggable false  //是否打开jni代码调试
+
+            //为assembleRelease构建类型配置签名信息
+            //signingConfig signingConfigs.release
+
+            //是否自动拆分多个dex文件，一般当代码中方法太多打开此功能
+            multiDexEnabled false
+
+            /**
+             * getDefaultProguardFile()是Android扩展的一个方法，它可以获取Android sdk目录默认的proguard配置文件
+             * android系统默认的混淆文件有两个一个是proguard-android.txt没有优化，另一个是proguard-android-optimize.txt
+             * 优化过的
+             *
+             * 此处还可以定义自己的混淆规则
+             */
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         /*assembleDebug{
@@ -36,10 +172,10 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')  //关联libs文件
-    implementation 'com.android.support:appcompat-v7:26.0.0-bate1'
-    implementation 'com.android.support.constraint:constraint-layout:2.0.1'
-    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.android.support:recyclerview-v7:26.0.0-beta1'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
 }
