@@ -1,0 +1,24 @@
+git的一般工作流程：
+1、git clone 项目地址
+2、修改代码
+3、git add .   git commit(添加到暂存区)
+	3.1 git reset --hard(添加之后会把工作区的修改冲掉) HEAD^(回到上一条的修改)
+4、git remote add origin 远程仓库地址（关联远程仓库）
+5、git push -u origin master 提交到远程仓库
+
+6、git checkout -b dev  在工作区创建并切换到dev分支
+7、git branch -d dev 删除本地分支
+8、git merge dev 合并分支
+
+9、git checkout -b dev origin/dev 在本地创建分支并同步远程分支
+修改分支之后git push origin dev到远程分支：
+	a、如果出现冲突则git pull拉取远程分支代码代本地解决冲突
+	再次执行git push origin dev
+		git branch --set-upstream dev origin/dev 关联本地分支与远程分支
+
+
+10、git stash 暂时隐藏当前分支工作区上的修改
+11、git stash apply回去之前隐藏的修改内容， git stash drop删除stash
+12、git stash pop恢复的同时删除stash记录
+
+13、git remote 查看远程分支
