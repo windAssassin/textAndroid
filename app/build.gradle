@@ -138,6 +138,22 @@ android {
      * }
      */
 
+
+    /**
+     *  自动清理未使用的资源
+     *  1、在buildTypes构建方法中设置shrinkResources来设置，在构建的过程中将无用的资源删除
+     *      此方法有时可能会误删（当使用反射引用资源的时候，这种方法是识别不出来的，尤其是在第三方库中）
+     *      此时就需要使用Android gradle提供的keep方法
+     *      新建一个xml文件res/raw/keep.xml(参见keep.xml)
+     *  2、ProductFlavor提供了一个方法resConfigs{} 配置哪些资源才能被打包到apk中
+     *      defaultConfig{
+     *          //表示只打包中文资源
+     *          resConfigs 'zh'
+     *      }
+     *
+     */
+
+
     /**
      * 是一个默认配置，它是一个productFlavor。productFlavor允许根据不同的情况生成多个不同的apk包
      * 如果不是针对自定义productFlavor单独配置，就会使用默认的productFlavor
@@ -197,9 +213,6 @@ android {
 
             //为assembleRelease构建类型配置签名信息
             //signingConfig signingConfigs.release
-
-            //是否自动拆分多个dex文件，一般当代码中方法太多打开此功能
-            multiDexEnabled false
 
             /**
              * getDefaultProguardFile()是Android扩展的一个方法，它可以获取Android sdk目录默认的proguard配置文件
