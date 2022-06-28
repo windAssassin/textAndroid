@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/region_info_menu" android:title="地区信息维护"/>
+    <item android:id="@+id/device_type_menu" android:title="资产类型维护"/>
+    <item android:id="@+id/barcode_collection_menu" android:title="开启条码采集"/>
+    <item android:id="@+id/rfid_collection_menu" android:title="开启RFID采集"/>
+</menu>
