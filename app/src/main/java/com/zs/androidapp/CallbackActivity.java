@@ -20,9 +20,11 @@ import androidx.annotation.Nullable;
  */
 
 class CallbackActivity extends ComponentActivity {
+
     @Override
     protected void onCreate(@Nullable @android.support.annotation.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //注册activity，获取到activityResultLauncher(此方法必须在started之前)
         ActivityResultLauncher<String> resultLauncher =
                 registerForActivityResult(new ActivityResultContracts.GetContent(),
@@ -49,6 +51,11 @@ class CallbackActivity extends ComponentActivity {
         //启动activity
         resultLauncher.launch("image/*");
         //resultLauncher.launch(new Intent(this, MainActivity.class));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 }
 

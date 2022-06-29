@@ -33,6 +33,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         mApplicationId = BuildConfig.APPLICATION_ID;
+
     }
 
 

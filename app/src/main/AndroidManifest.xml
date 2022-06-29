@@ -1,50 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zs.androidapp">
-    <!--
-    在创建Android应用的时候，系统会让一部分的其他应用自动对本应用可见，但是有一部分应用默认是对本应用不可见的
-    （这会影响queryIntentActivities()查询到的结果）；
-    可以在终端通过adb shell dumpsys package queries 查询到的forceQueryable部分就是默认对本应用可见的应用；
-     还可以配置一些信息让其他应用对本应用强制可见：
-     1、知道应用的具体包名
-     <queries>
-        <package android:name="com."/>
-    </queries>
-    2、通过activity 的<intent-filter>
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.SEND"/>
-            <data android:mimeType="image/*"/>
-        </intent>
-    </queries>
-    3、通过uri查询provider
-    <queries>
-        <provider android:authorities="com.example.settings.files" />
-    </queries>
-    -->
+    package="com.zs.androidapp" >
 
-
-
-    <!--
-    manifestPlaceholder占位符的使用，例如打多个不同的渠道包
-    1、首先在.gradle文件中配置productFlavors
-        android{
-            compileSdkVersion 23
-            productFlavors{
-                google{
-                }
-                baidu{
-                }
-            }
-
-            productFlavors.all{
-                flavors->
-                    manifestPlaceHolders.put("UMENG_CHANNEL", name)
-            }
-        }
-     通过manifestPlaceHolders占位符可以替换项目配置文件中的任何${var}$格式的占位符，
-     例如：contentProvider的auth的授权，或者其他需要动态配置meta的信息等。
-    -->
     <application
         android:name=".LauncherApp"
         android:allowBackup="true"
@@ -52,64 +9,59 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
+        <service
+            android:name=".TextService"
+            android:exported="false" >
+        </service>
 
-        <!--配置不同的渠道名-->
-        <!--<meta-data android:value="${UMENG_CHANNEL}$" android:name="UMENG_CHANNEL"/> -->
+        <receiver
+            android:exported="false"
+            android:permission="android.permission.SEND_SMS"
+            android:name="com.zs.androidapp.broadcast.LauncherBroadcastReceiver">
+            <intent-filter
+                android:priority="2">
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+            </intent-filter>
+        </receiver>
 
-        <!--任务亲和性：“亲和性”表示Activity倾向于属于哪个任务，可以通过<activity>标签taskAffinity改变任务亲和性
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- 配置不同的渠道名 -->
+        <!-- <meta-data android:value="${UMENG_CHANNEL}$" android:name="UMENG_CHANNEL"/> -->
+        <!--
+任务亲和性：“亲和性”表示Activity倾向于属于哪个任务，可以通过<activity>标签taskAffinity改变任务亲和性
             如果传递给startActivity()的intent包含FLAG_ACTIVITY_NEW_TASK标记，则系统会寻找其他任务来容纳新Activity。
             通常会是一个新任务，但也可能不是。如果已存在与新Activity具有相同亲和性的现有任务，则会将Activity启动到该任务中。
             如果不存在，则会启动一个新任务
         -->
-
-        <!--Activity的allowTaskReparenting属性设为"true"时,
+        <!--
+Activity的allowTaskReparenting属性设为"true"时,
             在这种情况下，一旦和 Activity 有亲和性的任务进入前台运行，Activity 就可从其启动的任务转移到该任务。
             举例来说，假设一款旅行应用中定义了一个报告特定城市天气状况的 Activity。该 Activity 与同一应用中的其他
             Activity 具有相同的亲和性（默认应用亲和性），并通过此属性支持重新归属。当您的某个 Activity 启动该天气预报
             Activity 时，该天气预报 Activity 最初会和您的 Activity 同属于一个任务。不过，当旅行应用的任务进入前台运行时，
             该天气预报 Activity 就会被重新分配给该任务并显示在其中。
         -->
-
-        <!--清除返回堆栈：如果用户离开任务堆栈较长时间，则系统会清除除根activity以外的所有activity，
+        <!--
+清除返回堆栈：如果用户离开任务堆栈较长时间，则系统会清除除根activity以外的所有activity，
             当用户再次返回到该任务时，只有根 Activity 会恢复。可以通过以下属性值修改此行为：
             alwaysRetainTaskState：如果将根activity的此属性设为true，则不会发生以上默认行为，即使经过很长时间任务堆栈也不会清除。
             clearTaskOnLaunch：如果将根activity的此属性设为true，则只要用户离开该任务，就会清除除了根activity所有activity，
             如果不是将根activity的此属性设为true，则只要用户离开该任务，就会清除任务中该activity以上所有的activity（不包括本身）。
             finishOnTaskLaunch: 如果一个activity的此属性设为true，则只要用户离开该activity所在的任务在返回任务中，该activity会被finish.
         -->
-
-        <activity android:name=".MainActivity"
+        <service
+            android:name=".LauncherService"
+            android:enabled="true"
             android:exported="true"
-            >
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <!--
-        配置activity intent过滤器
-        当允许外部activity隐式打开activity时，category必须配置成CATEGORY_DEFAULT
-        -->
-    <!--
-        <activity android:name=".CallbackActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="image/*"/>
-            </intent-filter>
-        </activity>-->
-
-
-       <!--安装此apk需要com.google.android.maps共享库-->
-        <!--<uses-library
-            android:name="com.google.android.maps"
-            android:required="true"/>-->
-
+            android:foregroundServiceType="location" />
     </application>
 
 </manifest>

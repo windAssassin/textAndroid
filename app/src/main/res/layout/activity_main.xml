@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--使用motionLayout添加view的动画支持，传入一个motionScene定义动画
+MotionLayout的几个属性：
+app:applyMotionScene="boolean"表示是否应用MotionScene，默认为true
+app:showPaths="boolean" 表示在运动进行时是否显示运动路径。此属性的默认值为 false
+app:progress="float" 可让您明确指定转换进度。您可以使用从 0（转换开始）到 1（转换结束）之间的任意浮点值
+app:currentState="reference" 可让您指定具体的 ConstraintSet
+-->
+
+<androidx.constraintlayout.motion.widget.MotionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.zs.androidapp.MainActivity">
+    tools:context="com.zs.androidapp.MainActivity"
+    app:applyMotionScene="true"
+    app:layoutDescription="@xml/activity_main_scene">
+    <View
+        android:id="@+id/button"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@color/colorAccent"
+        android:text="Button" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>
